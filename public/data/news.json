@@ -1,0 +1,64 @@
+{
+    "articles": [
+        {
+            "id": 1,
+            "slug": "winter-camp-2025",
+            "title": "冬季合宿を実施",
+            "date": "2025-12-14",
+            "category": "ニュース",
+            "description": "仙台育英陸上競技部長距離ブロックの冬季合宿を実施しました。",
+            "featured": true,
+            "imageKey": "news:winter-camp"
+        },
+        {
+            "id": 2,
+            "slug": "recruitment-2026",
+            "title": "新入部員募集のお知らせ",
+            "date": "2025-12-10",
+            "category": "ニュース",
+            "description": "2026年度の新入部員を募集しています。",
+            "featured": true,
+            "imageKey": "news:recruitment"
+        },
+        {
+            "id": 3,
+            "slug": "prefectural-ekiden-2025",
+            "title": "宮城県高校駅伝競走大会",
+            "date": "2025-11-30",
+            "category": "リザルト",
+            "description": "宮城県高校駅伝競走大会に出場しました。",
+            "featured": false,
+            "imageKey": "news:ekiden"
+        },
+        {
+            "id": 4,
+            "slug": "practice-observation",
+            "title": "練習見学会のご案内",
+            "date": "2025-11-25",
+            "category": "お知らせ",
+            "description": "練習見学会を開催します。ぜひご参加ください。",
+            "featured": false,
+            "imageKey": null
+        },
+        {
+            "id": 5,
+            "slug": "newcomer-championship-2025",
+            "title": "県新人陸上競技大会 結果報告",
+            "date": "2025-11-20",
+            "category": "大会結果",
+            "description": "県新人陸上競技大会の結果を報告します。",
+            "featured": false,
+            "imageKey": null
+        },
+        {
+            "id": 6,
+            "slug": "sns-launch",
+            "title": "公式SNSを開設しました",
+            "date": "2025-11-15",
+            "category": "お知らせ",
+            "description": "公式SNSアカウントを開設しました。フォローをお願いします。",
+            "featured": false,
+            "imageKey": null
+        }
+    ]
+}

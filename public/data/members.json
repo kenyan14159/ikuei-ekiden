@@ -1,0 +1,96 @@
+{
+    "staff": [
+        {
+            "name": "山本 一郎",
+            "role": "監督",
+            "imageUrl": "/images/members/staff-placeholder.jpg"
+        },
+        {
+            "name": "佐藤 健太",
+            "role": "コーチ",
+            "imageUrl": "/images/members/staff-placeholder.jpg"
+        }
+    ],
+    "members": {
+        "3年生": [
+            {
+                "name": "田中 大輔",
+                "nameRubyParts": [
+                    {
+                        "kanji": "田中",
+                        "ruby": "たなか"
+                    },
+                    {
+                        "kanji": "大輔",
+                        "ruby": "だいすけ"
+                    }
+                ],
+                "imageUrl": "/images/members/placeholder.jpg",
+                "middleSchool": "○○中学校",
+                "personalBests": [
+                    {
+                        "event": "5000m",
+                        "time": "14'30\"00"
+                    },
+                    {
+                        "event": "3000m",
+                        "time": "8'30\"00"
+                    }
+                ],
+                "grade": 3
+            }
+        ],
+        "2年生": [
+            {
+                "name": "佐々木 翔",
+                "nameRubyParts": [
+                    {
+                        "kanji": "佐々木",
+                        "ruby": "ささき"
+                    },
+                    {
+                        "kanji": "翔",
+                        "ruby": "しょう"
+                    }
+                ],
+                "imageUrl": "/images/members/placeholder.jpg",
+                "middleSchool": "△△中学校",
+                "personalBests": [
+                    {
+                        "event": "5000m",
+                        "time": "14'45\"00"
+                    },
+                    {
+                        "event": "3000m",
+                        "time": "8'40\"00"
+                    }
+                ],
+                "grade": 2
+            }
+        ],
+        "1年生": [
+            {
+                "name": "鈴木 健太",
+                "nameRubyParts": [
+                    {
+                        "kanji": "鈴木",
+                        "ruby": "すずき"
+                    },
+                    {
+                        "kanji": "健太",
+                        "ruby": "けんた"
+                    }
+                ],
+                "imageUrl": "/images/members/placeholder.jpg",
+                "middleSchool": "□□中学校",
+                "personalBests": [
+                    {
+                        "event": "3000m",
+                        "time": "9'00\"00"
+                    }
+                ],
+                "grade": 1
+            }
+        ]
+    }
+}
