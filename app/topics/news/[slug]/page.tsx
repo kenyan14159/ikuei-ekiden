@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, notFound } from "next/navigation";
+
+export const runtime = "edge";
 import Header from "@/components/sections/Header";
 import Footer from "@/components/sections/Footer";
 import { SubpageHeader } from "@/components/SubpageHeader";

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,6 +8,8 @@ import Footer from "@/components/sections/Footer";
 import { SubpageHeader } from "@/components/SubpageHeader";
 import { motion } from "framer-motion";
 import Link from "next/link";
+
+export const runtime = "edge";
 
 interface NewsArticle {
     id: number;
@@ -36,7 +39,7 @@ export default function ResultArticlePage() {
         // 全年度のデータから記事を探す
         Promise.all(
             availableYears.map(year =>
-                fetch(`/data/news/${year}.json`)
+                fetch(`/ data / news / ${year}.json`)
                     .then(res => res.json())
                     .then((data: YearData) => data.articles)
                     .catch(() => [])

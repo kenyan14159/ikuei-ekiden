@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Cloudflare Workers/PagesのEdge Runtimeを使用
+export const runtime = "edge";
+
 // 本番環境では環境変数から取得することを推奨
 const CORRECT_PASSWORD = process.env.EXCLUSIVE_PASSWORD || "1010";
 
@@ -16,8 +19,8 @@ export async function POST(request: NextRequest) {
         }
 
         if (password === CORRECT_PASSWORD) {
-            // 認証成功 - トークンを生成
-            const token = Buffer.from(`authenticated:${Date.now()}`).toString("base64");
+            // 認証成功 - トークンを生成 (Edge Runtime対応のためbtoaを使用)
+            const token = btoa(`authenticated:${Date.now()}`);
 
             const response = NextResponse.json(
                 { success: true, message: "認証成功" },
@@ -55,7 +58,8 @@ export async function GET(request: NextRequest) {
 
     if (token) {
         try {
-            const decoded = Buffer.from(token, "base64").toString();
+            // Edge Runtime対応のためatobを使用
+            const decoded = atob(token);
             if (decoded.startsWith("authenticated:")) {
                 return NextResponse.json({ authenticated: true });
             }
