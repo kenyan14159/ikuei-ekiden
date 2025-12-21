@@ -7,13 +7,13 @@ import { motion } from "framer-motion";
 
 export default function ThanksPage() {
     return (
-        <div className="min-h-screen bg-[var(--dark-100)]">
+        <div className="min-h-screen bg-white">
             <Header />
             <main>
                 <SubpageHeader
                     title="Gratitude"
-                    subtitle="「応援してくださる皆様へ」感謝のメッセージ。皆様の声が私たちの力です。"
-                    breadcrumbs={[{ label: "Team", href: "#" }]}
+                    subtitle="応援ありがとうございます"
+                    breadcrumbs={[{ label: "Team", href: "/team" }]}
                 />
 
                 <section className="section-padding relative">
@@ -23,7 +23,7 @@ export default function ThanksPage() {
                                 initial={{ opacity: 0 }}
                                 whileInView={{ opacity: 1 }}
                                 viewport={{ once: true }}
-                                className="relative p-12 md:p-20 border border-[var(--border)] overflow-hidden"
+                                className="relative p-12 md:p-20 border border-[var(--gray-200)] overflow-hidden bg-white"
                             >
                                 {/* Background Decor */}
                                 <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--blue)]/5 blur-[100px] pointer-events-none" />
@@ -32,13 +32,13 @@ export default function ThanksPage() {
                                     <span className="text-[var(--blue)] text-xs font-bold tracking-[0.5em] uppercase mb-12 block text-center">Message of Thanks</span>
                                     <div className="space-y-12">
                                         <div className="text-center">
-                                            <h2 className="text-white text-3xl md:text-5xl font-black italic italic mb-8 tracking-tighter" style={{ fontFamily: "'Noto Serif JP', serif" }}>
+                                            <h2 className="text-[var(--black)] text-3xl md:text-5xl font-black italic italic mb-8 tracking-tighter" style={{ fontFamily: "'Noto Serif JP', serif" }}>
                                                 皆様の声が、<br />
                                                 次の一歩を支えます。
                                             </h2>
                                         </div>
 
-                                        <div className="prose-custom text-[var(--muted-foreground)] leading-[2.2] tracking-widest text-lg md:text-xl text-center md:text-left">
+                                        <div className="text-[var(--gray-600)] leading-[2.2] tracking-widest text-lg md:text-xl text-center md:text-left">
                                             <p className="mb-8">
                                                 日頃より多大なるご声援をいただき、厚く御礼申し上げます。
                                                 沿道で振ってくださる旗、掲示板への書き込み、そして日々いただく温かいお言葉の数々は、私たち選手、スタッフにとって何物にも代えがたい「力」となっています。
@@ -51,9 +51,9 @@ export default function ThanksPage() {
                                             </p>
                                         </div>
 
-                                        <div className="mt-20 pt-12 border-t border-[var(--border)] text-center md:text-right">
-                                            <p className="text-[var(--muted-foreground)] text-sm mb-2 italic">2025年 12月吉日</p>
-                                            <p className="text-white font-bold text-xl tracking-tighter">仙台育英学園高等学校 陸上競技部 一同</p>
+                                        <div className="mt-20 pt-12 border-t border-[var(--gray-200)] text-center md:text-right">
+                                            <p className="text-[var(--gray-500)] text-sm mb-2 italic">2025年 12月吉日</p>
+                                            <p className="text-[var(--black)] font-bold text-xl tracking-tighter">仙台育英学園高等学校 陸上競技部 長距離ブロック 一同</p>
                                         </div>
                                     </div>
                                 </div>

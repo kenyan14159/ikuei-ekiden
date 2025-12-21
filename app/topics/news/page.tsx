@@ -14,88 +14,127 @@ interface NewsArticle {
     date: string;
     category: string;
     description: string;
+    content?: string;
     featured: boolean;
-    imageKey: string | null;
 }
 
+interface YearData {
+    year: number;
+    articles: NewsArticle[];
+}
+
+const availableYears = [2025, 2024];
+
 export default function NewsPage() {
-    const [articles, setArticles] = useState<NewsArticle[]>([]);
+    const [allArticles, setAllArticles] = useState<NewsArticle[]>([]);
+    const [selectedYear, setSelectedYear] = useState<number | null>(null);
 
     useEffect(() => {
-        fetch("/data/news.json")
-            .then((res) => res.json())
-            .then((json) => setArticles(json.articles))
-            .catch((err) => console.error("Failed to load news:", err));
+        // 全年度のデータを読み込む
+        Promise.all(
+            availableYears.map(year =>
+                fetch(`/data/news/${year}.json`)
+                    .then(res => res.json())
+                    .then((data: YearData) => data.articles)
+                    .catch(() => [])
+            )
+        ).then(results => {
+            const allData = results.flat();
+            // ニュース・お知らせのみフィルタ
+            const newsOnly = allData.filter(a =>
+                a.category === "ニュース" || a.category === "お知らせ"
+            );
+            setAllArticles(newsOnly);
+        });
     }, []);
 
     const formatDate = (dateStr: string) => {
         const date = new Date(dateStr);
-        return date.toLocaleDateString("ja-JP", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-        });
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
     };
 
+    const getYear = (dateStr: string) => new Date(dateStr).getFullYear();
+
+    const filteredArticles = selectedYear
+        ? allArticles.filter(a => getYear(a.date) === selectedYear)
+        : allArticles;
+
+    const years = [...new Set(allArticles.map(a => getYear(a.date)))].sort((a, b) => b - a);
+
     return (
-        <div className="min-h-screen bg-[var(--dark-100)]">
+        <div className="min-h-screen bg-white">
             <Header />
             <main>
                 <SubpageHeader
                     title="News"
-                    subtitle="最新のチーム活動や合宿の様子、重要なお知らせをお伝えします。"
-                    breadcrumbs={[{ label: "Topics", href: "#" }]}
+                    subtitle="お知らせ"
+                    breadcrumbs={[{ label: "Topics", href: "/topics" }]}
                 />
 
                 <section className="section-padding relative">
                     <div className="container-custom">
-                        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-12">
-                            {articles.map((article, i) => (
-                                <motion.article
-                                    key={article.id}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: i * 0.1 }}
-                                    viewport={{ once: true }}
-                                    className="group"
+                        {/* 年度フィルタ */}
+                        <div className="mb-8 flex flex-wrap gap-2">
+                            <button
+                                onClick={() => setSelectedYear(null)}
+                                className={`px-4 py-2 text-sm font-bold transition-all ${selectedYear === null
+                                    ? "bg-[var(--blue)] text-white"
+                                    : "bg-[var(--gray-100)] text-[var(--black)] hover:bg-[var(--gray-200)]"
+                                    }`}
+                            >
+                                すべて
+                            </button>
+                            {years.map(year => (
+                                <button
+                                    key={year}
+                                    onClick={() => setSelectedYear(year)}
+                                    className={`px-4 py-2 text-sm font-bold transition-all ${selectedYear === year
+                                        ? "bg-[var(--blue)] text-white"
+                                        : "bg-[var(--gray-100)] text-[var(--black)] hover:bg-[var(--gray-200)]"
+                                        }`}
                                 >
-                                    <Link href={`#news-${article.slug}`} className="block">
-                                        <div className="aspect-video bg-[var(--dark-300)] mb-6 overflow-hidden relative">
-                                            <div className="absolute inset-0 bg-gradient-to-t from-[var(--dark-100)] via-transparent to-transparent opacity-60" />
-                                            <div className="absolute top-4 left-4">
-                                                <span className="bg-[var(--blue)] text-white text-[10px] uppercase tracking-widest px-3 py-1 font-bold">
-                                                    {article.category}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <span className="text-[var(--muted-foreground)] text-xs block mb-3 font-mono">
-                                            {formatDate(article.date)}
-                                        </span>
-                                        <h2 className="text-white text-xl md:text-2xl font-bold mb-4 group-hover:text-[var(--blue)] transition-colors line-clamp-2">
-                                            {article.title}
-                                        </h2>
-                                        <p className="text-[var(--muted-foreground)] text-sm mb-6 line-clamp-3 leading-relaxed">
-                                            {article.description}
-                                        </p>
-                                        <div className="flex items-center gap-2 text-[var(--blue)] text-xs font-bold uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-opacity">
-                                            Read More
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                            </svg>
-                                        </div>
-                                    </Link>
-                                </motion.article>
+                                    {year}年
+                                </button>
                             ))}
                         </div>
 
-                        {/* Pagination Placeholder */}
-                        <div className="mt-20 pt-10 border-t border-[var(--border)] flex justify-center">
-                            <div className="flex gap-4">
-                                <span className="w-10 h-10 flex items-center justify-center bg-[var(--blue)] text-dark font-bold">1</span>
-                                <span className="w-10 h-10 flex items-center justify-center border border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--blue)] hover:text-white transition-colors cursor-pointer">2</span>
-                                <span className="w-10 h-10 flex items-center justify-center border border-[var(--border)] text-[var(--muted-foreground)] hover:border-[var(--blue)] hover:text-white transition-colors cursor-pointer">3</span>
+                        {filteredArticles.length === 0 ? (
+                            <div className="text-center text-[var(--gray-500)] py-12">
+                                ニュースはまだありません。
                             </div>
-                        </div>
+                        ) : (
+                            <div className="border-t border-[var(--gray-200)]">
+                                {filteredArticles.map((article, i) => (
+                                    <motion.article
+                                        key={article.id}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: i * 0.03 }}
+                                        viewport={{ once: true }}
+                                        className="border-b border-[var(--gray-200)] py-6"
+                                    >
+                                        <Link
+                                            href={`/topics/news/${article.slug}`}
+                                            className="block group"
+                                        >
+                                            <h2 className="text-[var(--black)] text-lg font-bold mb-2 group-hover:text-[var(--blue)] transition-colors">
+                                                {article.title}
+                                            </h2>
+                                            <p className="text-[var(--gray-500)] text-sm font-mono mb-3">
+                                                {formatDate(article.date)}
+                                            </p>
+                                            <span className="text-[var(--blue)] text-sm font-bold inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+                                                続きを読む
+                                                <span>→</span>
+                                            </span>
+                                        </Link>
+                                    </motion.article>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </section>
             </main>

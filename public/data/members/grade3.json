@@ -1,0 +1,244 @@
+{
+    "grade": 3,
+    "label": "3年生",
+    "male": [
+        {
+            "name": "青島 大陸",
+            "nameRubyParts": [
+                {
+                    "kanji": "青島",
+                    "ruby": "あおしま"
+                },
+                {
+                    "kanji": "大陸",
+                    "ruby": "りく"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "3000mSC県優勝、駅伝でも区間賞候補"
+        },
+        {
+            "name": "近江 亮",
+            "nameRubyParts": [
+                {
+                    "kanji": "近江",
+                    "ruby": "おうみ"
+                },
+                {
+                    "kanji": "亮",
+                    "ruby": "りょう"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "都大路1区経験者。ロードの強さに定評"
+        },
+        {
+            "name": "簡 子潔",
+            "nameRubyParts": [
+                {
+                    "kanji": "簡",
+                    "ruby": "かん"
+                },
+                {
+                    "kanji": "子潔",
+                    "ruby": "しけつ"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "台湾からの留学生。5000m台湾新記録保持"
+        },
+        {
+            "name": "菅野 元太",
+            "nameRubyParts": [
+                {
+                    "kanji": "菅野",
+                    "ruby": "かんの"
+                },
+                {
+                    "kanji": "元太",
+                    "ruby": "げんた"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "安定感のある主軸選手"
+        },
+        {
+            "name": "佐々木 蓮斗",
+            "nameRubyParts": [
+                {
+                    "kanji": "佐々木",
+                    "ruby": "ささき"
+                },
+                {
+                    "kanji": "蓮斗",
+                    "ruby": "れんと"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "中距離から長距離まで幅広く対応"
+        },
+        {
+            "name": "鈴木 大翔",
+            "nameRubyParts": [
+                {
+                    "kanji": "鈴木",
+                    "ruby": "すずき"
+                },
+                {
+                    "kanji": "大翔",
+                    "ruby": "たいが"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "チームのエース。インターハイ5000m上位"
+        },
+        {
+            "name": "若林 司",
+            "nameRubyParts": [
+                {
+                    "kanji": "若林",
+                    "ruby": "わかばやし"
+                },
+                {
+                    "kanji": "司",
+                    "ruby": "つかさ"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "3000mSCや5000mで活躍"
+        }
+    ],
+    "female": [
+        {
+            "name": "栗原 優奈",
+            "nameRubyParts": [
+                {
+                    "kanji": "栗原",
+                    "ruby": "くりはら"
+                },
+                {
+                    "kanji": "優奈",
+                    "ruby": "ゆうな"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "2000mSCなどで高い適性を見せる"
+        },
+        {
+            "name": "佐々木 芽生",
+            "nameRubyParts": [
+                {
+                    "kanji": "佐々木",
+                    "ruby": "ささき"
+                },
+                {
+                    "kanji": "芽生",
+                    "ruby": "めい"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "障害種目や駅伝で貢献"
+        },
+        {
+            "name": "佐藤 柚優",
+            "nameRubyParts": [
+                {
+                    "kanji": "佐藤",
+                    "ruby": "さとう"
+                },
+                {
+                    "kanji": "柚優",
+                    "ruby": "ゆゆ"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "3000mなどで活躍するスピードランナー"
+        },
+        {
+            "name": "デイシー・ジェロップ",
+            "nameRubyParts": [
+                {
+                    "kanji": "デイシー・ジェロップ",
+                    "ruby": ""
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "ケニアからの留学生。驚異的な区間記録を持つ"
+        },
+        {
+            "name": "手塚 蕾",
+            "nameRubyParts": [
+                {
+                    "kanji": "手塚",
+                    "ruby": "てづか"
+                },
+                {
+                    "kanji": "蕾",
+                    "ruby": "つぼみ"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "ロードレースでの強さに定評あり"
+        },
+        {
+            "name": "長岡 みさき",
+            "nameRubyParts": [
+                {
+                    "kanji": "長岡",
+                    "ruby": "ながおか"
+                },
+                {
+                    "kanji": "みさき",
+                    "ruby": ""
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "インターハイ出場。チームを牽引する柱"
+        },
+        {
+            "name": "細川 あおい",
+            "nameRubyParts": [
+                {
+                    "kanji": "細川",
+                    "ruby": "ほそかわ"
+                },
+                {
+                    "kanji": "あおい",
+                    "ruby": ""
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "都大路1区経験。安定したロード力"
+        },
+        {
+            "name": "渡辺 愛来",
+            "nameRubyParts": [
+                {
+                    "kanji": "渡辺",
+                    "ruby": "わたなべ"
+                },
+                {
+                    "kanji": "愛来",
+                    "ruby": "あいら"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "粘り強い走りでチームを支える"
+        },
+        {
+            "name": "渡辺 光桃",
+            "nameRubyParts": [
+                {
+                    "kanji": "渡辺",
+                    "ruby": "わたなべ"
+                },
+                {
+                    "kanji": "光桃",
+                    "ruby": "みつも"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "インターハイ出場。爆発力のある走り"
+        }
+    ]
+}

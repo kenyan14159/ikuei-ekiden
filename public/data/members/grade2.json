@@ -1,0 +1,124 @@
+{
+    "grade": 2,
+    "label": "2年生",
+    "male": [
+        {
+            "name": "市川 太羅",
+            "nameRubyParts": [
+                {
+                    "kanji": "市川",
+                    "ruby": "いちかわ"
+                },
+                {
+                    "kanji": "太羅",
+                    "ruby": "たいら"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "1500m・3000mで世代トップクラス"
+        },
+        {
+            "name": "木戸 海秀",
+            "nameRubyParts": [
+                {
+                    "kanji": "木戸",
+                    "ruby": "きど"
+                },
+                {
+                    "kanji": "海秀",
+                    "ruby": "かいしゅう"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "粘り強い走りが持ち味"
+        },
+        {
+            "name": "佐山 青",
+            "nameRubyParts": [
+                {
+                    "kanji": "佐山",
+                    "ruby": "さやま"
+                },
+                {
+                    "kanji": "青",
+                    "ruby": "あお"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "800m・1500mなどスピード種目で活躍"
+        },
+        {
+            "name": "ゼベダヨ・ララプ",
+            "nameRubyParts": [
+                {
+                    "kanji": "ゼベダヨ・ララプ",
+                    "ruby": ""
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "ケニアからの留学生。爆発的なスピードを持つ"
+        },
+        {
+            "name": "鶴藤 健琉",
+            "nameRubyParts": [
+                {
+                    "kanji": "鶴藤",
+                    "ruby": "つるふじ"
+                },
+                {
+                    "kanji": "健琉",
+                    "ruby": "たける"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "2025年県駅伝アンカー。急成長中の実力者"
+        }
+    ],
+    "female": [
+        {
+            "name": "磯 陽向",
+            "nameRubyParts": [
+                {
+                    "kanji": "磯",
+                    "ruby": "いそ"
+                },
+                {
+                    "kanji": "陽向",
+                    "ruby": "ひなた"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "1年生時から駅伝メンバー入りの実力者"
+        },
+        {
+            "name": "黒田 六花",
+            "nameRubyParts": [
+                {
+                    "kanji": "黒田",
+                    "ruby": "くろだ"
+                },
+                {
+                    "kanji": "六花",
+                    "ruby": "りっか"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "1500mなどで世代上位のタイムを持つ"
+        },
+        {
+            "name": "橘 のん",
+            "nameRubyParts": [
+                {
+                    "kanji": "橘",
+                    "ruby": "たちばな"
+                },
+                {
+                    "kanji": "のん",
+                    "ruby": ""
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "着実に力をつけている期待の2年生"
+        }
+    ]
+}

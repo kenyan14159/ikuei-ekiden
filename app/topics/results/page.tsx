@@ -14,76 +14,127 @@ interface NewsArticle {
     date: string;
     category: string;
     description: string;
+    content?: string;
     featured: boolean;
-    imageKey: string | null;
 }
 
+interface YearData {
+    year: number;
+    articles: NewsArticle[];
+}
+
+const availableYears = [2025, 2024];
+
 export default function ResultsPage() {
-    const [articles, setArticles] = useState<NewsArticle[]>([]);
+    const [allArticles, setAllArticles] = useState<NewsArticle[]>([]);
+    const [selectedYear, setSelectedYear] = useState<number | null>(null);
 
     useEffect(() => {
-        fetch("/data/news.json")
-            .then((res) => res.json())
-            .then((json) => setArticles(json.articles.filter((a: NewsArticle) => a.category === "リザルト" || a.category === "大会結果")))
-            .catch((err) => console.error("Failed to load results:", err));
+        // 全年度のデータを読み込む
+        Promise.all(
+            availableYears.map(year =>
+                fetch(`/data/news/${year}.json`)
+                    .then(res => res.json())
+                    .then((data: YearData) => data.articles)
+                    .catch(() => [])
+            )
+        ).then(results => {
+            const allData = results.flat();
+            // リザルトのみフィルタ
+            const resultsOnly = allData.filter(a =>
+                a.category === "リザルト" || a.category === "大会結果"
+            );
+            setAllArticles(resultsOnly);
+        });
     }, []);
 
     const formatDate = (dateStr: string) => {
         const date = new Date(dateStr);
-        return date.toLocaleDateString("ja-JP", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-        });
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
     };
 
+    const getYear = (dateStr: string) => new Date(dateStr).getFullYear();
+
+    const filteredArticles = selectedYear
+        ? allArticles.filter(a => getYear(a.date) === selectedYear)
+        : allArticles;
+
+    const years = [...new Set(allArticles.map(a => getYear(a.date)))].sort((a, b) => b - a);
+
     return (
-        <div className="min-h-screen bg-[var(--dark-100)]">
+        <div className="min-h-screen bg-white">
             <Header />
             <main>
                 <SubpageHeader
                     title="Results"
-                    subtitle="各大会での熱戦の記録。選手たちの努力の結晶をご紹介します。"
-                    breadcrumbs={[{ label: "Topics", href: "#" }]}
+                    subtitle="大会結果"
+                    breadcrumbs={[{ label: "Topics", href: "/topics" }]}
                 />
 
                 <section className="section-padding relative">
                     <div className="container-custom">
-                        <div className="grid gap-6">
-                            {articles.map((article, i) => (
-                                <motion.div
-                                    key={article.id}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    whileInView={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: i * 0.1 }}
-                                    viewport={{ once: true }}
+                        {/* 年度フィルタ */}
+                        <div className="mb-8 flex flex-wrap gap-2">
+                            <button
+                                onClick={() => setSelectedYear(null)}
+                                className={`px-4 py-2 text-sm font-bold transition-all ${selectedYear === null
+                                    ? "bg-[var(--blue)] text-white"
+                                    : "bg-[var(--gray-100)] text-[var(--black)] hover:bg-[var(--gray-200)]"
+                                    }`}
+                            >
+                                すべて
+                            </button>
+                            {years.map(year => (
+                                <button
+                                    key={year}
+                                    onClick={() => setSelectedYear(year)}
+                                    className={`px-4 py-2 text-sm font-bold transition-all ${selectedYear === year
+                                        ? "bg-[var(--blue)] text-white"
+                                        : "bg-[var(--gray-100)] text-[var(--black)] hover:bg-[var(--gray-200)]"
+                                        }`}
                                 >
-                                    <Link
-                                        href={`#result-${article.slug}`}
-                                        className="flex flex-col md:flex-row items-center gap-8 p-8 bg-[var(--dark-300)] border border-[var(--border)] hover:border-[var(--blue)] transition-all duration-300 group"
-                                    >
-                                        <div className="flex-shrink-0">
-                                            <span className="text-[var(--blue)] font-bold text-xl font-mono">{formatDate(article.date)}</span>
-                                        </div>
-                                        <div className="flex-grow">
-                                            <span className="bg-[var(--yellow)] text-dark text-[10px] uppercase tracking-widest px-3 py-1 font-bold mb-4 inline-block">
-                                                {article.category}
-                                            </span>
-                                            <h2 className="text-white text-2xl md:text-3xl font-black italic tracking-tight group-hover:text-[var(--blue)] transition-colors">
-                                                {article.title}
-                                            </h2>
-                                        </div>
-                                        <div className="flex-shrink-0">
-                                            <div className="w-12 h-12 border border-[var(--border)] flex items-center justify-center group-hover:bg-[var(--blue)] group-hover:border-[var(--blue)] transition-all duration-300">
-                                                <svg className="w-5 h-5 text-white group-hover:text-dark transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                                                </svg>
-                                            </div>
-                                        </div>
-                                    </Link>
-                                </motion.div>
+                                    {year}年
+                                </button>
                             ))}
                         </div>
+
+                        {filteredArticles.length === 0 ? (
+                            <div className="text-center text-[var(--gray-500)] py-12">
+                                リザルトはまだありません。
+                            </div>
+                        ) : (
+                            <div className="border-t border-[var(--gray-200)]">
+                                {filteredArticles.map((article, i) => (
+                                    <motion.article
+                                        key={article.id}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: i * 0.03 }}
+                                        viewport={{ once: true }}
+                                        className="border-b border-[var(--gray-200)] py-6"
+                                    >
+                                        <Link
+                                            href={`/topics/results/${article.slug}`}
+                                            className="block group"
+                                        >
+                                            <h2 className="text-[var(--black)] text-lg font-bold mb-2 group-hover:text-[var(--blue)] transition-colors">
+                                                {article.title}
+                                            </h2>
+                                            <p className="text-[var(--gray-500)] text-sm font-mono mb-3">
+                                                {formatDate(article.date)}
+                                            </p>
+                                            <span className="text-[var(--blue)] text-sm font-bold inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+                                                続きを読む
+                                                <span>→</span>
+                                            </span>
+                                        </Link>
+                                    </motion.article>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </section>
             </main>

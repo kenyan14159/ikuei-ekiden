@@ -22,16 +22,25 @@ export default function Topics() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/data/news.json")
-      .then((res) => res.json())
-      .then((data) => {
-        setArticles(data.articles);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Failed to load news:", err);
-        setLoading(false);
-      });
+    // 年度別JSONファイルから記事を取得
+    const availableYears = [2025, 2024];
+    Promise.all(
+      availableYears.map(year =>
+        fetch(`/data/news/${year}.json`)
+          .then(res => res.json())
+          .then(data => data.articles || [])
+          .catch(() => [])
+      )
+    ).then(results => {
+      const allArticles = results.flat().sort((a, b) =>
+        new Date(b.date).getTime() - new Date(a.date).getTime()
+      );
+      setArticles(allArticles);
+      setLoading(false);
+    }).catch(err => {
+      console.error("Failed to load news:", err);
+      setLoading(false);
+    });
   }, []);
 
   const formatDate = (dateStr: string) => {
@@ -43,14 +52,19 @@ export default function Topics() {
     });
   };
 
-  const featuredArticles = articles.filter((a) => a.featured);
-  const additionalArticles = articles.filter((a) => !a.featured);
+  // フィーチャー記事、またはカテゴリがニュース・リザルトの最新3件を表示
+  const displayArticles = articles.slice(0, 3);
+
+  // カテゴリに応じたリンク先を取得
+  const getArticleLink = (article: NewsArticle) => {
+    if (article.category === "リザルト" || article.category === "大会結果") {
+      return `/topics/results/${article.slug}`;
+    }
+    return `/topics/news/${article.slug}`;
+  };
 
   return (
-    <section id="topics" className="section-padding relative" ref={ref}>
-      <div className="absolute inset-0 bg-[var(--dark-100)]" />
-      <div className="absolute inset-0 noise-overlay" />
-
+    <section id="topics" className="section-padding relative bg-white" ref={ref}>
       <div className="container-custom relative z-10">
         {/* Section Header */}
         <motion.div
@@ -63,10 +77,10 @@ export default function Topics() {
             <span className="text-[var(--blue)] text-sm tracking-widest uppercase mb-4 block">
               Topics
             </span>
-            <h2 className="section-title text-white">
+            <h2 className="section-title text-[var(--black)]">
               最新トピックス
             </h2>
-            <p className="text-[var(--muted-foreground)] mt-6 max-w-xl">
+            <p className="text-[var(--gray-600)] mt-6 max-w-xl">
               最新ニュースとリザルト情報をお届けします
             </p>
           </div>
@@ -74,76 +88,40 @@ export default function Topics() {
 
         {/* Loading State */}
         {loading ? (
-          <div className="text-center text-[var(--muted-foreground)] py-12">
+          <div className="text-center text-[var(--gray-500)] py-12">
             読み込み中...
           </div>
         ) : (
           <>
-            {/* Featured Topics */}
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-              {featuredArticles.map((article, index) => (
+            {/* Featured Topics - 統一サイズカード */}
+            <div className="grid md:grid-cols-3 gap-6 mb-12">
+              {displayArticles.map((article, index) => (
                 <motion.article
                   key={article.id}
                   initial={{ opacity: 0, y: 30 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="group"
+                  className="group h-full"
                 >
-                  <Link href={`#topic-${article.id}`} className="block">
-                    {/* Image Placeholder */}
-                    <div className="aspect-video bg-[var(--dark-300)] mb-4 overflow-hidden relative">
-                      <div className="absolute inset-0 bg-gradient-to-t from-[var(--dark-100)] to-transparent opacity-60" />
-                      <div className="absolute top-4 left-4">
-                        <span className="bg-[var(--blue)] text-white text-xs px-3 py-1">
-                          {article.category}
-                        </span>
-                      </div>
-                      <div className="absolute bottom-4 left-4 right-4">
-                        <span className="text-[var(--muted-foreground)] text-xs block mb-2">
-                          {formatDate(article.date)}
-                        </span>
-                        <h3 className="text-white text-lg md:text-xl font-bold group-hover:text-[var(--blue)] transition-colors">
-                          {article.title}
-                        </h3>
-                      </div>
+                  <Link href={getArticleLink(article)} className="flex flex-col h-full p-6 bg-[var(--gray-50)] border border-[var(--gray-200)] hover:border-[var(--blue)] hover:shadow-lg transition-all duration-300">
+                    {/* Category & Date */}
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="bg-[var(--blue)] text-white text-[10px] uppercase tracking-widest px-3 py-1 font-bold">
+                        {article.category}
+                      </span>
                     </div>
-                    <span className="text-[var(--blue)] text-sm inline-flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                      記事を読む
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </span>
-                  </Link>
-                </motion.article>
-              ))}
 
-              {/* Result Card for non-featured */}
-              {articles.filter((a) => !a.featured && a.category === "リザルト").slice(0, 1).map((article, index) => (
-                <motion.article
-                  key={article.id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={isInView ? { opacity: 1, y: 0 } : {}}
-                  transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
-                  className="group"
-                >
-                  <Link href={`#topic-${article.id}`} className="block">
-                    <div className="aspect-video bg-[var(--dark-300)] mb-4 overflow-hidden relative flex items-center justify-center">
-                      <div className="absolute inset-0 bg-gradient-to-t from-[var(--dark-100)] to-transparent opacity-60" />
-                      <div className="absolute top-4 left-4">
-                        <span className="bg-[var(--yellow)] text-[var(--dark-100)] text-xs px-3 py-1">
-                          {article.category}
-                        </span>
-                      </div>
-                      <div className="absolute bottom-4 left-4 right-4">
-                        <span className="text-[var(--muted-foreground)] text-xs block mb-2">
-                          {formatDate(article.date)}
-                        </span>
-                        <h3 className="text-white text-lg md:text-xl font-bold group-hover:text-[var(--blue)] transition-colors">
-                          {article.title}
-                        </h3>
-                      </div>
-                    </div>
-                    <span className="text-[var(--blue)] text-sm inline-flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="text-[var(--gray-500)] text-xs mb-2">
+                      {formatDate(article.date)}
+                    </span>
+
+                    {/* Title */}
+                    <h3 className="text-[var(--black)] text-lg font-bold mb-3 group-hover:text-[var(--blue)] transition-colors line-clamp-2 flex-grow">
+                      {article.title}
+                    </h3>
+
+                    {/* Read More */}
+                    <span className="text-[var(--blue)] text-sm font-bold inline-flex items-center gap-2 group-hover:gap-3 transition-all mt-auto">
                       記事を読む
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -153,35 +131,6 @@ export default function Topics() {
                 </motion.article>
               ))}
             </div>
-
-            {/* Additional News List */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={isInView ? { opacity: 1, y: 0 } : {}}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="border-t border-[var(--border)] pt-8"
-            >
-              {additionalArticles.slice(0, 3).map((article, index) => (
-                <Link
-                  key={index}
-                  href="#"
-                  className="group flex flex-col md:flex-row md:items-center gap-2 md:gap-4 py-4 border-b border-[var(--border)] hover:border-[var(--blue)] transition-colors"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-[var(--muted-foreground)] text-xs">{formatDate(article.date)}</span>
-                    <span className="text-[var(--blue)] text-xs px-2 py-1 border border-[var(--blue)] opacity-60">
-                      {article.category}
-                    </span>
-                  </div>
-                  <h3 className="text-white font-medium group-hover:text-[var(--blue)] transition-colors flex-grow">
-                    {article.title}
-                  </h3>
-                  <svg className="w-5 h-5 text-[var(--muted-foreground)] group-hover:text-[var(--blue)] transition-colors hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </Link>
-              ))}
-            </motion.div>
           </>
         )}
 
@@ -190,13 +139,13 @@ export default function Topics() {
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="flex flex-wrap gap-4 justify-center mt-12"
+          className="flex flex-wrap gap-4 justify-center"
         >
-          <Link href="#news" className="btn-outline">
-            <span>ニュースへ</span>
+          <Link href="/topics/news" className="px-6 py-3 border-2 border-[var(--black)] text-[var(--black)] font-bold text-sm tracking-wider uppercase hover:bg-[var(--black)] hover:text-white transition-all">
+            ニュースへ
           </Link>
-          <Link href="#results" className="btn-outline">
-            <span>リザルトへ</span>
+          <Link href="/topics/results" className="px-6 py-3 border-2 border-[var(--black)] text-[var(--black)] font-bold text-sm tracking-wider uppercase hover:bg-[var(--black)] hover:text-white transition-all">
+            リザルトへ
           </Link>
         </motion.div>
       </div>

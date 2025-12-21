@@ -1,93 +1,175 @@
 "use client";
 
+import { useState } from "react";
 import Header from "@/components/sections/Header";
 import Footer from "@/components/sections/Footer";
 import { SubpageHeader } from "@/components/SubpageHeader";
 import { motion } from "framer-motion";
 
+type FormStatus = "idle" | "submitting" | "success" | "error";
+
 export default function ContactPage() {
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        category: "",
+        message: "",
+    });
+    const [status, setStatus] = useState<FormStatus>("idle");
+    const [errorMessage, setErrorMessage] = useState("");
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setStatus("submitting");
+        setErrorMessage("");
+
+        try {
+            const response = await fetch("/api/contact", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "送信に失敗しました");
+            }
+
+            setStatus("success");
+            setFormData({ name: "", email: "", category: "", message: "" });
+        } catch (error) {
+            setStatus("error");
+            setErrorMessage(error instanceof Error ? error.message : "送信中にエラーが発生しました");
+        }
+    };
+
     return (
-        <div className="min-h-screen bg-[var(--dark-100)]">
+        <div className="min-h-screen bg-white">
             <Header />
             <main>
                 <SubpageHeader
                     title="Contact"
-                    subtitle="入部のご案内、取材依頼、ご支援に関するお問い合わせはこちらから。"
+                    subtitle="お問い合わせはこちらから"
                     breadcrumbs={[]}
                 />
 
                 <section className="section-padding relative">
                     <div className="container-custom">
-                        <div className="max-w-4xl mx-auto">
-                            <div className="grid md:grid-cols-2 gap-12 mb-20">
+                        <div className="max-w-2xl mx-auto">
+                            {/* Success Message */}
+                            {status === "success" && (
                                 <motion.div
-                                    initial={{ opacity: 0, x: -20 }}
-                                    whileInView={{ opacity: 1, x: 0 }}
-                                    viewport={{ once: true }}
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    className="bg-green-50 border border-green-200 p-6 mb-8 text-center"
                                 >
-                                    <h2 className="text-2xl font-bold text-white mb-6">入部を希望される方へ</h2>
-                                    <p className="text-[var(--muted-foreground)] text-sm leading-loose mb-8">
-                                        仙台育英陸上競技部では、伝統あるオレンジの襷を共に繋ぎ、全国の頂点を目指す仲間を募集しています。
-                                        練習体験や寮の見学など、お気軽にお問い合わせください。
-                                    </p>
-                                    <a href="mailto:info@sendaiikuei-track.jp" className="text-[var(--blue)] font-bold flex items-center gap-2 group">
-                                        info@sendaiikuei-track.jp
-                                        <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                    <div className="flex items-center justify-center gap-2 text-green-600 mb-2">
+                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
-                                    </a>
+                                        <span className="font-bold">送信完了</span>
+                                    </div>
+                                    <p className="text-green-600 text-sm">
+                                        お問い合わせを受け付けました。内容を確認次第、ご連絡いたします。
+                                    </p>
                                 </motion.div>
+                            )}
 
-                                <motion.div
-                                    initial={{ opacity: 0, x: 20 }}
-                                    whileInView={{ opacity: 1, x: 0 }}
-                                    viewport={{ once: true }}
-                                >
-                                    <h2 className="text-2xl font-bold text-white mb-6">学校・寮の所在地</h2>
-                                    <address className="not-italic space-y-6">
-                                        <div>
-                                            <h3 className="text-[var(--blue)] text-[10px] uppercase tracking-widest font-black mb-1">Sendai Ikuei Gakuen</h3>
-                                            <p className="text-white text-sm">宮城県多賀城市高崎2丁目1-1</p>
-                                        </div>
-                                        <div>
-                                            <h3 className="text-[var(--blue)] text-[10px] uppercase tracking-widest font-black mb-1">Dormitory</h3>
-                                            <p className="text-white text-sm">宮城県多賀城市（栄光寮）</p>
-                                        </div>
-                                    </address>
-                                </motion.div>
-                            </div>
+                            {/* Form */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                className="bg-[var(--gray-50)] p-8 md:p-12 border border-[var(--gray-200)]"
+                            >
+                                <h2 className="text-[var(--black)] text-2xl font-bold mb-8 text-center">お問い合わせフォーム</h2>
 
-                            {/* Form Placeholder */}
-                            <div className="card-premium p-8 md:p-12">
-                                <form className="space-y-6">
+                                {/* Error Message */}
+                                {status === "error" && (
+                                    <div className="bg-red-50 border border-red-200 p-4 mb-6 text-center">
+                                        <p className="text-red-600 text-sm">{errorMessage}</p>
+                                    </div>
+                                )}
+
+                                <form onSubmit={handleSubmit} className="space-y-6">
                                     <div className="grid md:grid-cols-2 gap-6">
                                         <div className="space-y-2">
-                                            <label className="text-[var(--muted-foreground)] text-xs font-bold uppercase tracking-widest">お名前</label>
-                                            <input type="text" className="w-full bg-[var(--dark-100)] border border-[var(--border)] p-4 text-white focus:border-[var(--blue)] outline-none transition-colors" placeholder="山田 太郎" />
+                                            <label htmlFor="name" className="text-[var(--gray-600)] text-xs font-bold uppercase tracking-widest">お名前 <span className="text-red-500">*</span></label>
+                                            <input
+                                                type="text"
+                                                id="name"
+                                                name="name"
+                                                value={formData.name}
+                                                onChange={handleChange}
+                                                className="w-full bg-white border border-[var(--gray-300)] p-4 text-[var(--black)] focus:border-[var(--blue)] outline-none transition-colors"
+                                                placeholder="山田 太郎"
+                                                required
+                                                disabled={status === "submitting"}
+                                            />
                                         </div>
                                         <div className="space-y-2">
-                                            <label className="text-[var(--muted-foreground)] text-xs font-bold uppercase tracking-widest">メールアドレス</label>
-                                            <input type="email" className="w-full bg-[var(--dark-100)] border border-[var(--border)] p-4 text-white focus:border-[var(--blue)] outline-none transition-colors" placeholder="mail@example.com" />
+                                            <label htmlFor="email" className="text-[var(--gray-600)] text-xs font-bold uppercase tracking-widest">メールアドレス <span className="text-red-500">*</span></label>
+                                            <input
+                                                type="email"
+                                                id="email"
+                                                name="email"
+                                                value={formData.email}
+                                                onChange={handleChange}
+                                                className="w-full bg-white border border-[var(--gray-300)] p-4 text-[var(--black)] focus:border-[var(--blue)] outline-none transition-colors"
+                                                placeholder="mail@example.com"
+                                                required
+                                                disabled={status === "submitting"}
+                                            />
                                         </div>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[var(--muted-foreground)] text-xs font-bold uppercase tracking-widest">項目</label>
-                                        <select className="w-full bg-[var(--dark-100)] border border-[var(--border)] p-4 text-white focus:border-[var(--blue)] outline-none transition-colors">
-                                            <option>入部について</option>
-                                            <option>応援・ご支援について</option>
-                                            <option>プレス・取材について</option>
-                                            <option>その他</option>
+                                        <label htmlFor="category" className="text-[var(--gray-600)] text-xs font-bold uppercase tracking-widest">項目 <span className="text-red-500">*</span></label>
+                                        <select
+                                            id="category"
+                                            name="category"
+                                            value={formData.category}
+                                            onChange={handleChange}
+                                            className="w-full bg-white border border-[var(--gray-300)] p-4 text-[var(--black)] focus:border-[var(--blue)] outline-none transition-colors"
+                                            required
+                                            disabled={status === "submitting"}
+                                        >
+                                            <option value="">選択してください</option>
+                                            <option value="応援・ご支援について">応援・ご支援について</option>
+                                            <option value="プレス・取材について">プレス・取材について</option>
+                                            <option value="ホームページについて">ホームページについて</option>
+                                            <option value="その他">その他</option>
                                         </select>
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-[var(--muted-foreground)] text-xs font-bold uppercase tracking-widest">内容</label>
-                                        <textarea className="w-full bg-[var(--dark-100)] border border-[var(--border)] p-4 text-white h-40 focus:border-[var(--blue)] outline-none transition-colors" placeholder="お問い合わせ内容をご記入ください"></textarea>
+                                        <label htmlFor="message" className="text-[var(--gray-600)] text-xs font-bold uppercase tracking-widest">内容 <span className="text-red-500">*</span></label>
+                                        <textarea
+                                            id="message"
+                                            name="message"
+                                            value={formData.message}
+                                            onChange={handleChange}
+                                            className="w-full bg-white border border-[var(--gray-300)] p-4 text-[var(--black)] h-40 focus:border-[var(--blue)] outline-none transition-colors"
+                                            placeholder="お問い合わせ内容をご記入ください"
+                                            required
+                                            disabled={status === "submitting"}
+                                        />
                                     </div>
-                                    <button className="btn-outline w-full py-4 text-xs font-black uppercase tracking-[0.3em]">
-                                        Submit Message
+                                    <button
+                                        type="submit"
+                                        disabled={status === "submitting"}
+                                        className="w-full py-4 bg-[var(--blue)] text-white font-bold text-sm uppercase tracking-[0.3em] hover:bg-[var(--blue-light)] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {status === "submitting" ? "送信中..." : "送信する"}
                                     </button>
                                 </form>
-                            </div>
+                            </motion.div>
                         </div>
                     </div>
                 </section>

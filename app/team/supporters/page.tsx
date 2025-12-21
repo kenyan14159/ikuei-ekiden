@@ -5,73 +5,103 @@ import Footer from "@/components/sections/Footer";
 import { SubpageHeader } from "@/components/SubpageHeader";
 import { motion } from "framer-motion";
 
+const supporters = [
+    {
+        name: "CHRIO（クリオ）",
+        type: "企業",
+        url: "https://chrio.jp/player/%E4%BB%99%E5%8F%B0%E8%82%B2%E8%8B%B1%E5%AD%A6%E5%9C%92%E9%99%B8%E4%B8%8A%E9%83%A8/",
+        description: "スポーツネックレス・ブレスレット",
+    },
+];
+
 export default function SupportersPage() {
     return (
-        <div className="min-h-screen bg-[var(--dark-100)]">
+        <div className="min-h-screen bg-white">
             <Header />
             <main>
                 <SubpageHeader
                     title="Supporters"
-                    subtitle="仙台育英学園高等学校 陸上競技部を支えてくださる皆様をご紹介します。"
-                    breadcrumbs={[{ label: "Team", href: "#" }]}
+                    subtitle="ご支援・サポーター"
+                    breadcrumbs={[{ label: "Team", href: "/team" }]}
                 />
 
-                <section className="section-padding relative">
+                <section className="section-padding relative bg-[var(--gray-100)]">
                     <div className="container-custom">
                         <div className="max-w-4xl mx-auto">
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                className="card-premium p-12 mb-20"
+                                className="bg-white p-12 mb-12 border border-[var(--gray-200)] shadow-sm"
                             >
-                                <h2 className="text-3xl font-black italic mb-8 border-b border-[var(--blue)] pb-4 text-white">ご支援感謝申し上げます</h2>
-                                <p className="text-[var(--muted-foreground)] leading-loose mb-12">
+                                <h2 className="text-3xl font-black italic mb-8 border-b border-[var(--blue)] pb-4 text-[var(--black)]">ご支援感謝申し上げます</h2>
+                                <p className="text-[var(--gray-600)] leading-loose mb-8">
                                     日頃より、本校陸上競技部の活動に対し多大なるご理解とご協力をいただき、誠にありがとうございます。皆様からの温かいご声援とご支援が、選手たちの走る力となっております。
                                 </p>
-                                <div className="grid md:grid-cols-2 gap-12">
-                                    <div>
-                                        <h3 className="text-[var(--blue)] font-bold text-sm tracking-widest uppercase mb-4">企業・団体の皆様</h3>
-                                        <ul className="space-y-4 text-white font-bold">
-                                            <li className="flex items-center gap-2">
-                                                <span className="w-1.5 h-1.5 bg-[var(--blue)] rounded-full" />
-                                                仙台育英学園後援会 様
-                                            </li>
-                                            <li className="flex items-center gap-2">
-                                                <span className="w-1.5 h-1.5 bg-[var(--blue)] rounded-full" />
-                                                株式会社 ◯◯◯ 様
-                                            </li>
-                                            <li className="flex items-center gap-2">
-                                                <span className="w-1.5 h-1.5 bg-[var(--blue)] rounded-full" />
-                                                地域協議会 様
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div>
-                                        <h3 className="text-[var(--blue)] font-bold text-sm tracking-widest uppercase mb-4">個人の皆様</h3>
-                                        <p className="text-[var(--muted-foreground)] text-sm italic">
-                                            他、多くの卒業生・保護者の皆様より、温かなご支援を頂いております。
-                                        </p>
-                                    </div>
-                                </div>
                             </motion.div>
 
-                            <div className="grid md:grid-cols-2 gap-8">
-                                <div className="card-premium">
-                                    <h3 className="text-white font-bold mb-4">サポーター募集</h3>
-                                    <p className="text-[var(--muted-foreground)] text-sm mb-6 leading-relaxed">
-                                        本部では、選手たちの環境整備をより一層充実させるため、活動をサポートしていただける企業・団体の皆様を募集しております。
-                                    </p>
-                                    <button className="btn-outline w-full text-[10px]">詳細を見る</button>
+                            {/* サポーター一覧 */}
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.1 }}
+                                className="bg-white p-8 border border-[var(--gray-200)] mb-12"
+                            >
+                                <h3 className="text-[var(--blue)] font-bold text-sm tracking-widest uppercase mb-6">企業・団体の皆様</h3>
+                                <div className="space-y-4">
+                                    {supporters.map((s, i) => (
+                                        <div key={i} className="flex items-center gap-4 p-4 bg-[var(--gray-50)] border border-[var(--gray-200)]">
+                                            <span className="w-2 h-2 bg-[var(--blue)] rounded-full flex-shrink-0" />
+                                            <div className="flex-grow">
+                                                {s.url ? (
+                                                    <a
+                                                        href={s.url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-[var(--black)] font-bold hover:text-[var(--blue)] transition-colors inline-flex items-center gap-2"
+                                                    >
+                                                        {s.name}
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                                        </svg>
+                                                    </a>
+                                                ) : (
+                                                    <span className="text-[var(--black)] font-bold">{s.name}</span>
+                                                )}
+                                                {s.description && (
+                                                    <span className="text-[var(--gray-500)] text-sm ml-2">- {s.description}</span>
+                                                )}
+                                            </div>
+                                            <span className="text-[var(--gray-400)] text-xs">{s.type}</span>
+                                        </div>
+                                    ))}
                                 </div>
-                                <div className="card-premium">
-                                    <h3 className="text-white font-bold mb-4">寄付・差し入れについて</h3>
-                                    <p className="text-[var(--muted-foreground)] text-sm mb-6 leading-relaxed">
-                                        合宿や大会遠征等へのご厚志、差し入れにつきましても、随時受け付けております。まずはお問い合わせください。
-                                    </p>
-                                    <button className="btn-outline w-full text-[10px]">お問い合わせ</button>
-                                </div>
-                            </div>
+                                <p className="text-[var(--gray-500)] text-sm italic mt-6">
+                                    他、多くの卒業生・保護者の皆様より、温かなご支援を頂いております。
+                                </p>
+                            </motion.div>
+
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.2 }}
+                                className="bg-white p-6 border border-[var(--gray-200)] max-w-md mx-auto"
+                            >
+                                <h3 className="text-[var(--black)] font-bold mb-4">ご寄付について</h3>
+                                <p className="text-[var(--gray-600)] text-sm mb-6 leading-relaxed">
+                                    仙台育英学園へのご寄付を受け付けております。詳細は学園公式サイトをご覧ください。
+                                </p>
+                                <a
+                                    href="https://www.sendaiikuei.ed.jp/corp/donation/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full block text-center py-3 bg-[var(--blue)] text-white font-bold text-xs uppercase tracking-wider hover:bg-[var(--blue-light)] transition-all"
+                                >
+                                    寄付のご案内
+                                </a>
+                            </motion.div>
                         </div>
                     </div>
                 </section>

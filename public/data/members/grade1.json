@@ -1,0 +1,68 @@
+{
+    "grade": 1,
+    "label": "1年生",
+    "male": [
+        {
+            "name": "鈴木 改汰",
+            "nameRubyParts": [
+                {
+                    "kanji": "鈴木",
+                    "ruby": "すずき"
+                },
+                {
+                    "kanji": "改汰",
+                    "ruby": "かいた"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "中学時代から注目される期待の新戦力"
+        }
+    ],
+    "female": [
+        {
+            "name": "石原 万結",
+            "nameRubyParts": [
+                {
+                    "kanji": "石原",
+                    "ruby": "いしはら"
+                },
+                {
+                    "kanji": "万結",
+                    "ruby": "まゆ"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "1500m県新人戦優勝など即戦力"
+        },
+        {
+            "name": "大木 優奈",
+            "nameRubyParts": [
+                {
+                    "kanji": "大木",
+                    "ruby": "おおき"
+                },
+                {
+                    "kanji": "優奈",
+                    "ruby": "ゆうな"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "中学時代からの実力派。順調に成長中"
+        },
+        {
+            "name": "長森 結愛",
+            "nameRubyParts": [
+                {
+                    "kanji": "長森",
+                    "ruby": "ながもり"
+                },
+                {
+                    "kanji": "結愛",
+                    "ruby": "ゆあ"
+                }
+            ],
+            "imageUrl": "/images/members/placeholder.jpg",
+            "description": "2025年県駅伝1区で区間新。スーパー1年生"
+        }
+    ]
+}
