@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import Header from "@/components/sections/Header";
 import Footer from "@/components/sections/Footer";
 import { SubpageHeader } from "@/components/SubpageHeader";
 import { motion, AnimatePresence } from "framer-motion";
+import { logger } from "@/lib/logger";
 
 interface Member {
     name: string;
@@ -65,7 +67,7 @@ export default function MembersPage() {
                     grades: [grade3Data, grade2Data, grade1Data],
                 });
             } catch (err) {
-                console.error("Failed to load members:", err);
+                logger.error("Failed to load members:", err);
             }
         };
 
@@ -161,10 +163,14 @@ export default function MembersPage() {
                                             >
                                                 <div className="aspect-[3/4] bg-[var(--gray-200)] mb-4 overflow-hidden flex items-center justify-center relative">
                                                     {s.imageUrl && !s.imageUrl.includes("placeholder") ? (
-                                                        <img
+                                                        <Image
                                                             src={s.imageUrl}
-                                                            alt={s.name}
-                                                            className="w-full h-full object-cover"
+                                                            alt={`${s.name} - ${s.role}`}
+                                                            fill
+                                                            className="object-cover"
+                                                            sizes="(max-width: 768px) 50vw, 25vw"
+                                                            loading="lazy"
+                                                            quality={85}
                                                         />
                                                     ) : (
                                                         <div className="text-[var(--gray-400)] text-center">

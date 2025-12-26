@@ -5,6 +5,7 @@ import Header from "@/components/sections/Header";
 import Footer from "@/components/sections/Footer";
 import { SubpageHeader } from "@/components/SubpageHeader";
 import { motion } from "framer-motion";
+import { logger } from "@/lib/logger";
 
 interface ScheduleEvent {
     id: number;
@@ -48,7 +49,7 @@ export default function SchedulePage() {
         fetch("/data/schedule.json")
             .then((res) => res.json())
             .then((json) => setData(json))
-            .catch((err) => console.error("Failed to load schedule:", err));
+            .catch((err) => logger.error("Failed to load schedule:", err));
     }, []);
 
     if (!data) return null;

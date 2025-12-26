@@ -3,6 +3,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
+import { logger } from "@/lib/logger";
 
 interface ScheduleEvent {
   id: number;
@@ -21,7 +22,7 @@ export default function Schedule() {
     fetch("/data/schedule.json")
       .then((res) => res.json())
       .then((data) => setEvents(data.events.slice(0, 5))) // 最初の5件を表示
-      .catch((err) => console.error("Failed to load schedule:", err));
+      .catch((err) => logger.error("Failed to load schedule:", err));
   }, []);
 
   // 日付をフォーマット (2025-12-20 -> 12.20)

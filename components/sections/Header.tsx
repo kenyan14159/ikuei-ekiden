@@ -22,6 +22,8 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
   const submenuTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const firstMenuItemRef = useRef<HTMLAnchorElement>(null);
 
   // useEffect(() => {
   //   const handleScroll = () => {
@@ -34,12 +36,53 @@ export default function Header() {
   useEffect(() => {
     if (mobileMenuOpen) {
       document.body.style.overflow = "hidden";
+      // フォーカスを最初のメニュー項目に移動
+      setTimeout(() => {
+        firstMenuItemRef.current?.focus();
+      }, 100);
     } else {
       document.body.style.overflow = "unset";
     }
     return () => {
       document.body.style.overflow = "unset";
     };
+  }, [mobileMenuOpen]);
+
+  // キーボードナビゲーション（ESCキーでメニューを閉じる、フォーカストラップ）
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setMobileMenuOpen(false);
+      }
+
+      // フォーカストラップ: Tabキーでメニュー内を循環
+      if (e.key === "Tab" && menuRef.current) {
+        const focusableElements = menuRef.current.querySelectorAll<HTMLElement>(
+          'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey) {
+          // Shift + Tab
+          if (document.activeElement === firstElement) {
+            e.preventDefault();
+            lastElement?.focus();
+          }
+        } else {
+          // Tab
+          if (document.activeElement === lastElement) {
+            e.preventDefault();
+            firstElement?.focus();
+          }
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [mobileMenuOpen]);
 
   const menuItems: MenuItem[] = [
@@ -206,9 +249,12 @@ export default function Header() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
             className="fixed inset-0 z-40 bg-white overflow-y-auto"
+            role="dialog"
+            aria-modal="true"
+            aria-label="メインメニュー"
           >
             <div className="relative min-h-full flex items-center justify-center py-24">
-              <nav className="text-center w-full px-4">
+              <nav className="text-center w-full px-4" ref={menuRef}>
                 {menuItems.map((item, index) => (
                   <div key={item.href} className="overflow-hidden mb-4">
                     <motion.div
@@ -225,6 +271,8 @@ export default function Header() {
                         href={item.href}
                         onClick={() => !item.subItems && setMobileMenuOpen(false)}
                         className="block py-2 group"
+                        ref={index === 0 ? firstMenuItemRef : null}
+                        tabIndex={mobileMenuOpen ? 0 : -1}
                       >
                         <span className="text-3xl md:text-5xl lg:text-6xl font-bold text-[var(--black)] group-hover:text-[var(--blue)] transition-colors duration-300">
                           {item.label}

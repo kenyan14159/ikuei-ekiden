@@ -136,10 +136,87 @@ sendai-ikuei/
 
 ## パフォーマンス最適化
 
-- **画像の遅延読み込み** - 将来的に実装可能
-- **WebP形式の画像使用** - 推奨
-- **CDN活用** - 本番環境での推奨
+- **画像の遅延読み込み** - Next.js Imageコンポーネントで実装済み
+- **WebP/AVIF形式の自動変換** - Next.js Imageで自動対応
+- **画像の最適化** - 自動リサイズと最適なフォーマット選択
 - **コード分割** - Next.jsのApp Routerにより自動対応
+- **パッケージ最適化** - framer-motion、lucide-reactの自動最適化
+
+## セキュリティ機能
+
+### 実装済みのセキュリティ対策
+
+1. **XSS対策**
+   - 包括的な入力値サニタイゼーション（`lib/sanitize.ts`）
+   - HTMLメール送信時のサニタイゼーション
+
+2. **認証システム**
+   - JWT（JSON Web Token）による安全な認証（`lib/auth.ts`）
+   - セッションCookieの適切な設定
+
+3. **レート制限**
+   - Upstash Redisを使用したEdge Runtime対応のレート制限
+   - IPベースのリクエスト制限
+
+4. **セキュリティヘッダー**
+   - X-Content-Type-Options、X-Frame-Options等の設定（`middleware.ts`）
+   - CSP（Content Security Policy）の準備
+
+5. **エラートラッキング**
+   - 構造化されたエラーログ（`lib/logger.ts`）
+   - Sentry統合の準備（オプション）
+
+## 環境変数の設定
+
+プロジェクトルートに `.env.local` ファイルを作成し、以下の環境変数を設定してください：
+
+```bash
+# JWT認証用のシークレットキー（必ず変更してください）
+JWT_SECRET=your-super-secret-jwt-key-change-in-production-min-32-chars
+
+# 限定コンテンツ用のパスワード
+EXCLUSIVE_PASSWORD=your-exclusive-password
+
+# メール送信（Resend）
+RESEND_API_KEY=re_xxxxxxxxxxxxx
+CONTACT_EMAIL=admin@sendai-ikuei-track.jp
+
+# Upstash Redis（レート制限用 - 本番環境では必須）
+UPSTASH_REDIS_REST_URL=https://your-redis-instance.upstash.io
+UPSTASH_REDIS_REST_TOKEN=your-redis-token
+```
+
+詳細は `.env.example` を参照してください。
+
+## 本番環境へのデプロイ
+
+### Cloudflare Pages（推奨）
+
+```bash
+# ビルド
+npm run build
+npm run pages:build
+
+# Cloudflare Pagesにデプロイ
+# wrangler.toml の設定を確認してください
+```
+
+### 必要な環境変数
+
+本番環境では、以下の環境変数を必ず設定してください：
+
+- `JWT_SECRET` - 32文字以上のランダムな文字列
+- `EXCLUSIVE_PASSWORD` - 限定コンテンツ用のパスワード
+- `UPSTASH_REDIS_REST_URL` - Upstash RedisのURL
+- `UPSTASH_REDIS_REST_TOKEN` - Upstash Redisのトークン
+
+### パフォーマンス監視
+
+本番環境では、以下の監視ツールの導入を推奨します：
+
+- **Vercel Analytics** - Core Web Vitalsの監視
+- **Sentry** - エラートラッキング（オプション）
+- **Google Analytics 4** - ユーザー行動分析
 
 ## ライセンス
 

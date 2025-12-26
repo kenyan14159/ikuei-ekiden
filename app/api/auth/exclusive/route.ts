@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+import { logger } from "@/lib/logger";
+import { createAuthToken, verifyAuthToken } from "@/lib/auth";
 
 // Cloudflare Workers/PagesのEdge Runtimeを使用
 export const runtime = "edge";
 
-// 本番環境では環境変数から取得することを推奨
-const CORRECT_PASSWORD = process.env.EXCLUSIVE_PASSWORD || "1010";
+// 環境変数から取得（デフォルト値なしで必須にする）
+const CORRECT_PASSWORD = process.env.EXCLUSIVE_PASSWORD;
+
+if (!CORRECT_PASSWORD && process.env.NODE_ENV === "production") {
+  throw new Error("EXCLUSIVE_PASSWORD environment variable is required in production");
+}
 
 export async function POST(request: NextRequest) {
     try {
@@ -18,9 +24,20 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        if (password === CORRECT_PASSWORD) {
-            // 認証成功 - トークンを生成 (Edge Runtime対応のためbtoaを使用)
-            const token = btoa(`authenticated:${Date.now()}`);
+        // パスワードが設定されていない場合は開発環境でのみデフォルト値を使用
+        const validPassword = CORRECT_PASSWORD || (process.env.NODE_ENV === "development" ? "1010" : null);
+        
+        if (!validPassword) {
+            logger.error("EXCLUSIVE_PASSWORD is not configured", undefined, {});
+            return NextResponse.json(
+                { success: false, error: "認証システムが正しく設定されていません" },
+                { status: 500 }
+            );
+        }
+
+        if (password === validPassword) {
+            // 認証成功 - JWTトークンを生成
+            const token = await createAuthToken();
 
             const response = NextResponse.json(
                 { success: true, message: "認証成功" },
@@ -44,7 +61,7 @@ export async function POST(request: NextRequest) {
             );
         }
     } catch (error) {
-        console.error("Auth error:", error);
+        logger.error("Auth error", error);
         return NextResponse.json(
             { success: false, error: "認証中にエラーが発生しました" },
             { status: 500 }
@@ -57,14 +74,9 @@ export async function GET(request: NextRequest) {
     const token = request.cookies.get("exclusive_auth")?.value;
 
     if (token) {
-        try {
-            // Edge Runtime対応のためatobを使用
-            const decoded = atob(token);
-            if (decoded.startsWith("authenticated:")) {
-                return NextResponse.json({ authenticated: true });
-            }
-        } catch {
-            // トークンが無効
+        const isValid = await verifyAuthToken(token);
+        if (isValid) {
+            return NextResponse.json({ authenticated: true });
         }
     }
 

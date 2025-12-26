@@ -2,9 +2,13 @@
 
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
-import Image from "next/image";
+import NextImage from "next/image";
 
-const heroImages = Array.from({ length: 15 }, (_, i) => `/images/ikuei-ekiden-img/ikuei-img${i + 1}.JPG`);
+// 画像パスを配列で管理（Next.js Imageで最適化）
+const heroImages = Array.from({ length: 15 }, (_, i) => ({
+  src: `/images/ikuei-ekiden-img/ikuei-img${i + 1}.JPG`,
+  alt: `仙台育英陸上競技部 練習風景 ${i + 1}`,
+}));
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -19,24 +23,53 @@ export default function Hero() {
 
   // ランダムな画像表示のためのステート
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [preloadedImages, setPreloadedImages] = useState<Set<number>>(new Set([0]));
 
   useEffect(() => {
-    // 初期表示時にランダムな画像を選択
-    setCurrentImageIndex(Math.floor(Math.random() * heroImages.length));
+    // 最初の画像をランダムに選択（ただし0から始めることで確実に読み込む）
+    const initialIndex = 0;
+    setCurrentImageIndex(initialIndex);
 
-    // 5秒ごとに画像をランダムに切り替え
+    // 最初の画像を優先読み込み（ブラウザのネイティブImageコンストラクタを使用）
+    const firstImage = new window.Image();
+    firstImage.src = heroImages[initialIndex].src;
+    firstImage.onload = () => {
+      setPreloadedImages(prev => new Set([...prev, initialIndex]));
+    };
+
+    // 次の2-3枚をバックグラウンドでプリロード（パフォーマンスを考慮して3枚まで）
+    const preloadCount = Math.min(3, heroImages.length - 1);
+    const preloadIndices = Array.from({ length: preloadCount }, (_, i) => i + 1);
+    
+    preloadIndices.forEach((index) => {
+      const img = new window.Image();
+      img.src = heroImages[index].src;
+      img.onload = () => {
+        setPreloadedImages(prev => new Set([...prev, index]));
+      };
+    });
+  }, []);
+
+  useEffect(() => {
+    // 8秒ごとに画像を切り替え（リソース消費を削減）
+    // プリロード済みの画像から選択
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => {
-        let next;
-        do {
-          next = Math.floor(Math.random() * heroImages.length);
-        } while (next === prev && heroImages.length > 1);
+        if (preloadedImages.size === 0) return prev;
+        
+        const available = Array.from(preloadedImages);
+        // 現在の画像以外から選択
+        const filtered = available.filter(idx => idx !== prev);
+        const next = filtered.length > 0 
+          ? filtered[Math.floor(Math.random() * filtered.length)]
+          : available[Math.floor(Math.random() * available.length)];
+        
         return next;
       });
-    }, 5000);
+    }, 8000); // 5秒から8秒に延長
 
     return () => clearInterval(interval);
-  }, []);
+  }, [preloadedImages]);
 
   // 文字ごとのスタッガーアニメーション用
   const titleLine1 = "至誠力走";
@@ -82,12 +115,17 @@ export default function Hero() {
             transition={{ duration: 1.5 }}
             className="absolute inset-0"
           >
-            <Image
-              src={heroImages[currentImageIndex]}
-              alt="Hero Background"
+            <NextImage
+              src={heroImages[currentImageIndex].src}
+              alt={heroImages[currentImageIndex].alt}
               fill
               className="object-cover"
-              priority
+              priority={currentImageIndex === 0}
+              loading={currentImageIndex === 0 ? "eager" : "lazy"}
+              quality={85}
+              sizes="100vw"
+              placeholder="blur"
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//Z"
             />
           </motion.div>
         </AnimatePresence>

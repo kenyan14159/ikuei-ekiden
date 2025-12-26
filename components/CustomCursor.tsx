@@ -8,19 +8,46 @@ export default function CustomCursor() {
     const [isHovering, setIsHovering] = useState(false);
     const [isClicking, setIsClicking] = useState(false);
     const cursorRef = useRef<HTMLDivElement>(null);
+    const rafRef = useRef<number | null>(null);
 
     // タッチデバイスではカーソルを非表示
     const isTouchDevice = typeof window !== "undefined" && "ontouchstart" in window;
-    const [isVisible, setIsVisible] = useState(!isTouchDevice);
+    const [isVisible, setIsVisible] = useState(false);
+    const [shouldRender, setShouldRender] = useState(false);
 
+    // パフォーマンスチェックとレンダリング判定
     useEffect(() => {
-        // Hide on mobile/touch devices
-        if (typeof window !== "undefined" && "ontouchstart" in window) {
+        if (typeof window === "undefined") return;
+
+        // タッチデバイスでは無効化
+        if (isTouchDevice) {
             return;
         }
 
+        // 低スペックデバイスの検出
+        const isLowEndDevice = navigator.hardwareConcurrency <= 2;
+        const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        if (isLowEndDevice || prefersReducedMotion) {
+            return;
+        }
+
+        setShouldRender(true);
+        setIsVisible(true);
+    }, [isTouchDevice]);
+
+    useEffect(() => {
+        if (!shouldRender) return;
+
+        // requestAnimationFrameを使用してパフォーマンスを最適化
         const handleMouseMove = (e: MouseEvent) => {
-            setPosition({ x: e.clientX, y: e.clientY });
+            if (rafRef.current) {
+                cancelAnimationFrame(rafRef.current);
+            }
+
+            rafRef.current = requestAnimationFrame(() => {
+                setPosition({ x: e.clientX, y: e.clientY });
+            });
         };
 
         const handleMouseEnter = () => setIsVisible(true);
@@ -54,10 +81,13 @@ export default function CustomCursor() {
             document.removeEventListener("mouseleave", handleMouseLeave);
             document.removeEventListener("mousedown", handleMouseDown);
             document.removeEventListener("mouseup", handleMouseUp);
+            if (rafRef.current) {
+                cancelAnimationFrame(rafRef.current);
+            }
         };
-    }, []);
+    }, [shouldRender]);
 
-    if (!isVisible) return null;
+    if (!isVisible || !shouldRender) return null;
 
     return (
         <>

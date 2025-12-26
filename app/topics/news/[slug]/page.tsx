@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, notFound } from "next/navigation";
-
-export const runtime = "edge";
+import { useParams } from "next/navigation";
 import Header from "@/components/sections/Header";
 import Footer from "@/components/sections/Footer";
 import { SubpageHeader } from "@/components/SubpageHeader";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { generateArticleSchema } from "@/lib/structured-data";
 
 interface NewsArticle {
     id: number;
@@ -104,8 +103,21 @@ export default function NewsArticlePage() {
         );
     }
 
+    // 構造化データを生成
+    const articleSchema = generateArticleSchema({
+        headline: article.title,
+        description: article.description || article.content?.substring(0, 200) || "",
+        datePublished: article.date,
+        dateModified: article.date,
+        url: `https://sendai-ikuei-track.jp/topics/news/${article.slug}`,
+    });
+
     return (
         <div className="min-h-screen bg-white">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+            />
             <Header />
             <main>
                 <SubpageHeader
@@ -123,6 +135,8 @@ export default function NewsArticlePage() {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             className="max-w-3xl mx-auto"
+                            itemScope
+                            itemType="https://schema.org/NewsArticle"
                         >
                             <div className="mb-8">
                                 <div className="flex items-center gap-3 mb-4">

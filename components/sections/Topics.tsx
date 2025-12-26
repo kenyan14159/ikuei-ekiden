@@ -3,6 +3,7 @@
 import { motion, useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
+import { logger } from "@/lib/logger";
 
 interface NewsArticle {
   id: number;
@@ -38,7 +39,7 @@ export default function Topics() {
       setArticles(allArticles);
       setLoading(false);
     }).catch(err => {
-      console.error("Failed to load news:", err);
+      logger.error("Failed to load news:", err);
       setLoading(false);
     });
   }, []);
