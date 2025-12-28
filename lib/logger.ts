@@ -6,7 +6,11 @@
 
 // Edge Runtime対応: 環境変数は関数内で評価する（ビルド時ではなくリクエスト時に評価）
 function isDevelopment(): boolean {
-  return process.env.NODE_ENV === 'development';
+  try {
+    return typeof process !== 'undefined' && process.env && process.env.NODE_ENV === 'development';
+  } catch {
+    return false;
+  }
 }
 
 interface LogContext {

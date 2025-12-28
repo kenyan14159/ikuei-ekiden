@@ -42,6 +42,9 @@ export async function generateStaticParams() {
     return allSlugs;
 }
 
+// 動的なパラメータ（未定義のスラッグ）は404にする
+export const dynamicParams = false;
+
 // 記事データを取得
 async function getArticle(slug: string): Promise<NewsArticle | null> {
     for (const data of allYearData) {
