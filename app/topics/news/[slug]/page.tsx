@@ -1,14 +1,11 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
 import Header from "@/components/sections/Header";
 import Footer from "@/components/sections/Footer";
 import { SubpageHeader } from "@/components/SubpageHeader";
-import { motion } from "framer-motion";
 import Link from "next/link";
 import { generateArticleSchema } from "@/lib/structured-data";
-import EkidenResultContent from "@/components/articles/EkidenResultContent";
+import NewsArticleContent from "./NewsArticleContent";
+import fs from "fs";
+import path from "path";
 
 interface NewsArticle {
     id: number;
@@ -29,28 +26,49 @@ interface YearData {
 
 const availableYears = [2025, 2024];
 
-export default function NewsArticlePage() {
-    const params = useParams();
-    const slug = params.slug as string;
-    const [article, setArticle] = useState<NewsArticle | null>(null);
-    const [loading, setLoading] = useState(true);
+// ビルド時にすべてのスラッグを取得
+export async function generateStaticParams() {
+    const allSlugs: { slug: string }[] = [];
 
-    useEffect(() => {
-        // 全年度のデータから記事を探す
-        Promise.all(
-            availableYears.map(year =>
-                fetch(`/data/news/${year}.json`)
-                    .then(res => res.json())
-                    .then((data: YearData) => data.articles)
-                    .catch(() => [])
-            )
-        ).then(results => {
-            const allData = results.flat();
-            const found = allData.find(a => a.slug === slug);
-            setArticle(found || null);
-            setLoading(false);
-        });
-    }, [slug]);
+    for (const year of availableYears) {
+        try {
+            const filePath = path.join(process.cwd(), "public", "data", "news", `${year}.json`);
+            const fileContents = fs.readFileSync(filePath, "utf8");
+            const data: YearData = JSON.parse(fileContents);
+            data.articles.forEach((article) => {
+                allSlugs.push({ slug: article.slug });
+            });
+        } catch {
+            // ファイルが見つからない場合はスキップ
+        }
+    }
+
+    return allSlugs;
+}
+
+// 記事データを取得
+async function getArticle(slug: string): Promise<NewsArticle | null> {
+    for (const year of availableYears) {
+        try {
+            const filePath = path.join(process.cwd(), "public", "data", "news", `${year}.json`);
+            const fileContents = fs.readFileSync(filePath, "utf8");
+            const data: YearData = JSON.parse(fileContents);
+            const found = data.articles.find((a) => a.slug === slug);
+            if (found) return found;
+        } catch {
+            // ファイルが見つからない場合はスキップ
+        }
+    }
+    return null;
+}
+
+export default async function NewsArticlePage({
+    params,
+}: {
+    params: Promise<{ slug: string }>;
+}) {
+    const { slug } = await params;
+    const article = await getArticle(slug);
 
     const formatDate = (dateStr: string) => {
         const date = new Date(dateStr);
@@ -60,18 +78,6 @@ export default function NewsArticlePage() {
             day: "numeric",
         });
     };
-
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-white">
-                <Header />
-                <main className="flex items-center justify-center py-32">
-                    <div className="text-[var(--gray-500)]">読み込み中...</div>
-                </main>
-                <Footer />
-            </div>
-        );
-    }
 
     if (!article) {
         return (
@@ -133,49 +139,14 @@ export default function NewsArticlePage() {
 
                 <section className="section-padding relative">
                     <div className="container-custom">
-                        <motion.article
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="max-w-3xl mx-auto"
-                            itemScope
-                            itemType="https://schema.org/NewsArticle"
-                        >
-                            <div className="mb-8">
-                                <div className="flex items-center gap-3 mb-4">
-                                    <span className="bg-[var(--blue)] text-white text-[10px] uppercase tracking-widest px-3 py-1 font-bold">
-                                        {article.category}
-                                    </span>
-                                    <span className="text-[var(--gray-500)] text-sm font-mono">
-                                        {formatDate(article.date)}
-                                    </span>
-                                </div>
-                                <h1 className="text-3xl md:text-4xl font-black text-[var(--black)] leading-tight">
-                                    {article.title}
-                                </h1>
-                            </div>
-
-                            <div className="prose prose-lg max-w-none">
-                                {article.slug === "76th-national-ekiden-news" ? (
-                                    <EkidenResultContent />
-                                ) : (
-                                    <div className="bg-[var(--gray-50)] p-8 border border-[var(--gray-200)]">
-                                        <div className="text-[var(--gray-700)] text-base leading-loose whitespace-pre-line">
-                                            {article.content || article.description}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-
-                            <div className="mt-12 pt-8 border-t border-[var(--gray-200)]">
-                                <Link
-                                    href="/topics/news"
-                                    className="inline-flex items-center gap-2 text-[var(--blue)] font-bold text-sm hover:gap-3 transition-all"
-                                >
-                                    <span>←</span>
-                                    ニュース一覧に戻る
-                                </Link>
-                            </div>
-                        </motion.article>
+                        <NewsArticleContent
+                            slug={article.slug}
+                            category={article.category}
+                            formattedDate={formatDate(article.date)}
+                            title={article.title}
+                            content={article.content}
+                            description={article.description}
+                        />
                     </div>
                 </section>
             </main>
