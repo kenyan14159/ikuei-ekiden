@@ -5,11 +5,13 @@ import { createAuthToken, verifyAuthToken } from "@/lib/auth";
 // Cloudflare Workers/PagesのEdge Runtimeを使用
 export const runtime = "edge";
 
-// 環境変数から取得（デフォルト値なしで必須にする）
-const CORRECT_PASSWORD = process.env.EXCLUSIVE_PASSWORD;
-
-if (!CORRECT_PASSWORD && process.env.NODE_ENV === "production") {
-  throw new Error("EXCLUSIVE_PASSWORD environment variable is required in production");
+// 環境変数から取得する関数（ビルド時ではなくリクエスト時に評価される）
+function getPassword(): string | null {
+    const password = process.env.EXCLUSIVE_PASSWORD;
+    if (!password && process.env.NODE_ENV === "production") {
+        return null; // 実行時にエラーハンドリング
+    }
+    return password || (process.env.NODE_ENV === "development" ? "1010" : null);
 }
 
 export async function POST(request: NextRequest) {
@@ -25,8 +27,8 @@ export async function POST(request: NextRequest) {
         }
 
         // パスワードが設定されていない場合は開発環境でのみデフォルト値を使用
-        const validPassword = CORRECT_PASSWORD || (process.env.NODE_ENV === "development" ? "1010" : null);
-        
+        const validPassword = getPassword();
+
         if (!validPassword) {
             logger.error("EXCLUSIVE_PASSWORD is not configured", undefined, {});
             return NextResponse.json(
