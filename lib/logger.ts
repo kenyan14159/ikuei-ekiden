@@ -4,7 +4,10 @@
  * エラートラッキングサービス（Sentry等）への統合準備済み
  */
 
-const isDevelopment = process.env.NODE_ENV === 'development';
+// Edge Runtime対応: 環境変数は関数内で評価する（ビルド時ではなくリクエスト時に評価）
+function isDevelopment(): boolean {
+  return process.env.NODE_ENV === 'development';
+}
 
 interface LogContext {
   [key: string]: unknown;
@@ -12,30 +15,30 @@ interface LogContext {
 
 export const logger = {
   log: (...args: unknown[]) => {
-    if (isDevelopment) {
+    if (isDevelopment()) {
       console.log(...args);
     }
   },
-  
+
   error: (message: string, error?: Error | unknown, context?: LogContext) => {
-    if (isDevelopment) {
+    if (isDevelopment()) {
       console.error(message, error, context);
     } else {
       // 本番環境でのエラーログ（機密情報を含まない形式）
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : typeof error === 'string' 
-        ? error 
-        : JSON.stringify(error);
-      
-      const sanitizedContext = context ? 
+      const errorMessage = error instanceof Error
+        ? error.message
+        : typeof error === 'string'
+          ? error
+          : JSON.stringify(error);
+
+      const sanitizedContext = context ?
         Object.fromEntries(
           Object.entries(context).map(([key, value]) => [
-            key, 
+            key,
             typeof value === 'string' ? value.substring(0, 100) : value
           ])
         ) : undefined;
-      
+
       // Sentry統合（環境変数が設定されている場合）
       // インストール: npm install @sentry/nextjs
       // 設定後、以下のコメントを解除
@@ -47,19 +50,19 @@ export const logger = {
       //     extra: { message, context: sanitizedContext },
       //   });
       // }
-      
+
       // コンソールに出力（本番環境でもエラーは記録）
       console.error('[ERROR]', message, errorMessage, sanitizedContext);
     }
   },
-  
+
   warn: (message: string, context?: LogContext) => {
-    if (isDevelopment) {
+    if (isDevelopment()) {
       console.warn(message, context);
     } else {
       // 本番環境でも警告は記録
       console.warn('[WARN]', message, context);
-      
+
       // Sentry統合（オプション）
       // if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
       //   const Sentry = await import('@sentry/nextjs');
@@ -70,9 +73,9 @@ export const logger = {
       // }
     }
   },
-  
+
   info: (message: string, context?: LogContext) => {
-    if (isDevelopment) {
+    if (isDevelopment()) {
       console.info(message, context);
     }
     // 本番環境ではinfoログは出力しない（必要に応じて変更）
