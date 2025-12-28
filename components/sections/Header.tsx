@@ -137,7 +137,7 @@ export default function Header() {
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 group">
               <Image
-                src="/images/ikuei-ekiden.png"
+                src="/images/ikuei-ekiden-.png"
                 alt="仙台育英 駅伝"
                 width={200}
                 height={60}

@@ -8,6 +8,7 @@ import { SubpageHeader } from "@/components/SubpageHeader";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { generateArticleSchema } from "@/lib/structured-data";
+import EkidenResultContent from "@/components/articles/EkidenResultContent";
 
 interface NewsArticle {
     id: number;
@@ -17,6 +18,7 @@ interface NewsArticle {
     category: string;
     description: string;
     content?: string;
+    images?: string[];
     featured: boolean;
 }
 
@@ -153,11 +155,15 @@ export default function NewsArticlePage() {
                             </div>
 
                             <div className="prose prose-lg max-w-none">
-                                <div className="bg-[var(--gray-50)] p-8 border border-[var(--gray-200)]">
-                                    <div className="text-[var(--gray-700)] text-base leading-loose whitespace-pre-line">
-                                        {article.content || article.description}
+                                {article.slug === "76th-national-ekiden-news" ? (
+                                    <EkidenResultContent />
+                                ) : (
+                                    <div className="bg-[var(--gray-50)] p-8 border border-[var(--gray-200)]">
+                                        <div className="text-[var(--gray-700)] text-base leading-loose whitespace-pre-line">
+                                            {article.content || article.description}
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
 
                             <div className="mt-12 pt-8 border-t border-[var(--gray-200)]">

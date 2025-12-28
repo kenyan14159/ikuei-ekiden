@@ -74,7 +74,7 @@ export default function Footer() {
           >
             <Link href="/" className="flex items-center gap-3 mb-4">
               <Image
-                src="/images/ikuei-ekiden.png"
+                src="/images/ikuei-ekiden-.png"
                 alt="仙台育英 駅伝"
                 width={166}
                 height={50}

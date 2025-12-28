@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -8,6 +7,7 @@ import Footer from "@/components/sections/Footer";
 import { SubpageHeader } from "@/components/SubpageHeader";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import EkidenResultContent from "@/components/articles/EkidenResultContent";
 
 export const runtime = "edge";
 
@@ -19,6 +19,7 @@ interface NewsArticle {
     category: string;
     description: string;
     content?: string;
+    images?: string[];
     featured: boolean;
 }
 
@@ -39,7 +40,7 @@ export default function ResultArticlePage() {
         // 全年度のデータから記事を探す
         Promise.all(
             availableYears.map(year =>
-                fetch(`/ data / news / ${year}.json`)
+                fetch(`/data/news/${year}.json`)
                     .then(res => res.json())
                     .then((data: YearData) => data.articles)
                     .catch(() => [])
@@ -140,11 +141,15 @@ export default function ResultArticlePage() {
                             </div>
 
                             <div className="prose prose-lg max-w-none">
-                                <div className="bg-[var(--gray-50)] p-8 border border-[var(--gray-200)]">
-                                    <div className="text-[var(--gray-700)] text-base leading-loose whitespace-pre-line">
-                                        {article.content || article.description}
+                                {article.slug === "76th-national-ekiden-result" ? (
+                                    <EkidenResultContent />
+                                ) : (
+                                    <div className="bg-[var(--gray-50)] p-8 border border-[var(--gray-200)]">
+                                        <div className="text-[var(--gray-700)] text-base leading-loose whitespace-pre-line">
+                                            {article.content || article.description}
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                             </div>
 
                             <div className="mt-12 pt-8 border-t border-[var(--gray-200)]">

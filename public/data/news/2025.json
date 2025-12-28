@@ -3,23 +3,31 @@
     "articles": [
         {
             "id": 1,
-            "slug": "test-news-1",
-            "title": "【テスト】サンプルニュース記事1",
-            "date": "2025-01-01",
+            "slug": "76th-national-ekiden-news",
+            "title": "第76回全国高校駅伝　結果",
+            "date": "2025-12-21",
             "category": "ニュース",
-            "description": "これはテスト用のサンプル記事です。実際のコンテンツは後日追加されます。",
-            "content": "これはテスト用のサンプル記事です。\n\n実際のコンテンツは後日追加されます。",
+            "description": "第76回全国高校駅伝で男子は準優勝（高校最高記録・大会新記録）、女子は第4位という結果を収めました。",
+            "images": [
+                "/images/topics/ikuei-miyakoji1.jpg",
+                "/images/topics/ikuei-miyakoji2.jpg",
+                "/images/topics/ikuei-miyakoji3.jpg"
+            ],
             "featured": true
         },
         {
             "id": 2,
-            "slug": "test-result-1",
-            "title": "【テスト】サンプル大会結果1",
-            "date": "2025-01-01",
+            "slug": "76th-national-ekiden-result",
+            "title": "第76回全国高校駅伝　結果",
+            "date": "2025-12-21",
             "category": "リザルト",
-            "description": "これはテスト用のサンプル大会結果です。実際のコンテンツは後日追加されます。",
-            "content": "これはテスト用のサンプル大会結果です。\n\n実際のコンテンツは後日追加されます。",
-            "featured": false
+            "description": "第76回全国高校駅伝で男子は準優勝（高校最高記録・大会新記録）、女子は第4位という結果を収めました。",
+            "images": [
+                "/images/topics/ikuei-miyakoji1.jpg",
+                "/images/topics/ikuei-miyakoji2.jpg",
+                "/images/topics/ikuei-miyakoji3.jpg"
+            ],
+            "featured": true
         }
     ]
 }

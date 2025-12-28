@@ -26,8 +26,11 @@ export default function Hero() {
   const [preloadedImages, setPreloadedImages] = useState<Set<number>>(new Set([0]));
 
   useEffect(() => {
-    // 最初の画像をランダムに選択（ただし0から始めることで確実に読み込む）
-    const initialIndex = 0;
+    // 画像配列をシャッフルしてランダムな順番で表示
+    const shuffledIndices = Array.from({ length: heroImages.length }, (_, i) => i)
+      .sort(() => Math.random() - 0.5);
+
+    const initialIndex = shuffledIndices[0];
     setCurrentImageIndex(initialIndex);
 
     // 最初の画像を優先読み込み（ブラウザのネイティブImageコンストラクタを使用）
@@ -37,11 +40,9 @@ export default function Hero() {
       setPreloadedImages(prev => new Set([...prev, initialIndex]));
     };
 
-    // 次の2-3枚をバックグラウンドでプリロード（パフォーマンスを考慮して3枚まで）
+    // 次の3枚をバックグラウンドでプリロード（シャッフル順で）
     const preloadCount = Math.min(3, heroImages.length - 1);
-    const preloadIndices = Array.from({ length: preloadCount }, (_, i) => i + 1);
-    
-    preloadIndices.forEach((index) => {
+    shuffledIndices.slice(1, preloadCount + 1).forEach((index) => {
       const img = new window.Image();
       img.src = heroImages[index].src;
       img.onload = () => {
@@ -56,14 +57,14 @@ export default function Hero() {
     const interval = setInterval(() => {
       setCurrentImageIndex((prev) => {
         if (preloadedImages.size === 0) return prev;
-        
+
         const available = Array.from(preloadedImages);
         // 現在の画像以外から選択
         const filtered = available.filter(idx => idx !== prev);
-        const next = filtered.length > 0 
+        const next = filtered.length > 0
           ? filtered[Math.floor(Math.random() * filtered.length)]
           : available[Math.floor(Math.random() * available.length)];
-        
+
         return next;
       });
     }, 8000); // 5秒から8秒に延長

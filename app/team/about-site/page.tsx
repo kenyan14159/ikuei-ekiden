@@ -48,28 +48,6 @@ export default function AboutSitePage() {
                                 </div>
                             </motion.section>
 
-                            {/* 写真提供 */}
-                            <motion.section
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                            >
-                                <h2 className="text-2xl font-bold text-[var(--black)] mb-6 border-l-4 border-[var(--blue)] pl-4">写真提供</h2>
-                                <div className="bg-[var(--gray-50)] p-6 border border-[var(--gray-200)]">
-                                    <p className="text-[var(--gray-600)] text-sm">
-                                        saya 様
-                                    </p>
-                                    <a href="https://www.instagram.com/saya_sports_films/" target="_blank" rel="noopener noreferrer" className="text-[var(--blue)] text-sm hover:underline inline-flex items-center gap-1 mt-2">
-                                        @saya_sports_films
-                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                                        </svg>
-                                    </a>
-                                    <p className="text-[var(--gray-500)] text-xs mt-4">
-                                        皆様の応援が励みになりますので、ぜひSNSのフォローもよろしくお願いいたします。
-                                    </p>
-                                </div>
-                            </motion.section>
 
                             {/* プライバシーポリシー */}
                             <motion.section
