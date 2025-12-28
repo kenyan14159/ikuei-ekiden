@@ -27,18 +27,18 @@ async function checkRateLimit(ip: string): Promise<{ success: boolean; reset?: n
     // Upstash Redisが設定されている場合
     const upstashUrl = process.env.UPSTASH_REDIS_REST_URL;
     const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN;
-    
+
     if (upstashUrl && upstashToken) {
         try {
             const { Ratelimit } = await import("@upstash/ratelimit");
             const { Redis } = await import("@upstash/redis");
-            
+
             const ratelimit = new Ratelimit({
                 redis: Redis.fromEnv(),
                 limiter: Ratelimit.slidingWindow(5, "1 h"),
                 analytics: true,
             });
-            
+
             const { success, reset } = await ratelimit.limit(`contact:${ip}`);
             return { success, reset };
         } catch (error) {
@@ -47,7 +47,7 @@ async function checkRateLimit(ip: string): Promise<{ success: boolean; reset?: n
             return { success: true };
         }
     }
-    
+
     // Upstashが設定されていない場合の簡易レート制限
     // 注意: Edge Runtimeではメモリが共有されないため、完全には機能しない
     // 本番環境では必ずUpstash Redisを設定すること
@@ -69,15 +69,15 @@ export async function POST(request: NextRequest) {
         // レート制限チェック
         const clientIP = getClientIP(request);
         const rateLimitResult = await checkRateLimit(clientIP);
-        
+
         if (!rateLimitResult.success) {
             const headers: HeadersInit = {};
             if (rateLimitResult.reset) {
                 headers["X-RateLimit-Reset"] = new Date(rateLimitResult.reset).toISOString();
             }
-            
+
             return NextResponse.json(
-                { 
+                {
                     error: "送信回数が上限に達しました。しばらくしてから再度お試しください。",
                     reset: rateLimitResult.reset ? new Date(rateLimitResult.reset).toISOString() : undefined
                 },
@@ -129,7 +129,15 @@ export async function POST(request: NextRequest) {
         if (resendApiKey) {
             try {
                 // 動的インポート（Edge Runtime対応）
-                const { Resend } = await import("resend");
+                let Resend;
+                try {
+                    const module = await import("resend");
+                    Resend = module.Resend;
+                } catch (importError) {
+                    logger.error("Failed to import 'resend' module", importError);
+                    throw new Error("Email service unavailable (module import failed)");
+                }
+
                 const resend = new Resend(resendApiKey);
 
                 await resend.emails.send({
@@ -148,9 +156,9 @@ export async function POST(request: NextRequest) {
                     `,
                 });
 
-                logger.info("Contact form submitted successfully", { 
+                logger.info("Contact form submitted successfully", {
                     email: sanitizedData.email.substring(0, 50), // 機密情報保護のため短縮
-                    category: sanitizedData.category 
+                    category: sanitizedData.category
                 });
             } catch (emailError) {
                 logger.error("Failed to send email", emailError);
