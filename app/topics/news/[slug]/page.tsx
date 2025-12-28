@@ -4,8 +4,10 @@ import { SubpageHeader } from "@/components/SubpageHeader";
 import Link from "next/link";
 import { generateArticleSchema } from "@/lib/structured-data";
 import NewsArticleContent from "./NewsArticleContent";
-import fs from "fs";
-import path from "path";
+
+// JSONファイルを直接インポート（ビルド時に解決される）
+import newsData2025 from "../../../../public/data/news/2025.json";
+import newsData2024 from "../../../../public/data/news/2024.json";
 
 interface NewsArticle {
     id: number;
@@ -24,23 +26,17 @@ interface YearData {
     articles: NewsArticle[];
 }
 
-const availableYears = [2025, 2024];
+// すべての年度データを配列にまとめる
+const allYearData: YearData[] = [newsData2025 as YearData, newsData2024 as YearData];
 
 // ビルド時にすべてのスラッグを取得
 export async function generateStaticParams() {
     const allSlugs: { slug: string }[] = [];
 
-    for (const year of availableYears) {
-        try {
-            const filePath = path.join(process.cwd(), "public", "data", "news", `${year}.json`);
-            const fileContents = fs.readFileSync(filePath, "utf8");
-            const data: YearData = JSON.parse(fileContents);
-            data.articles.forEach((article) => {
-                allSlugs.push({ slug: article.slug });
-            });
-        } catch {
-            // ファイルが見つからない場合はスキップ
-        }
+    for (const data of allYearData) {
+        data.articles.forEach((article) => {
+            allSlugs.push({ slug: article.slug });
+        });
     }
 
     return allSlugs;
@@ -48,16 +44,9 @@ export async function generateStaticParams() {
 
 // 記事データを取得
 async function getArticle(slug: string): Promise<NewsArticle | null> {
-    for (const year of availableYears) {
-        try {
-            const filePath = path.join(process.cwd(), "public", "data", "news", `${year}.json`);
-            const fileContents = fs.readFileSync(filePath, "utf8");
-            const data: YearData = JSON.parse(fileContents);
-            const found = data.articles.find((a) => a.slug === slug);
-            if (found) return found;
-        } catch {
-            // ファイルが見つからない場合はスキップ
-        }
+    for (const data of allYearData) {
+        const found = data.articles.find((a) => a.slug === slug);
+        if (found) return found;
     }
     return null;
 }
