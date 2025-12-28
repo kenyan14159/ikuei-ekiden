@@ -5,21 +5,25 @@
 
 import { SignJWT, jwtVerify } from 'jose';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'change-this-secret-key-in-production';
+// 環境変数は関数内で参照する（Edge Runtimeでの初期化クラッシュ防止）
+function getJwtSecret(): string {
+  return process.env.JWT_SECRET || 'change-this-secret-key-in-production';
+}
+
 
 /**
  * 認証トークンを生成
  * @returns JWTトークン文字列
  */
 export async function createAuthToken(): Promise<string> {
-  const secret = new TextEncoder().encode(JWT_SECRET);
-  
+  const secret = new TextEncoder().encode(getJwtSecret());
+
   const token = await new SignJWT({ authenticated: true })
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime('24h')
     .sign(secret);
-  
+
   return token;
 }
 
@@ -30,7 +34,7 @@ export async function createAuthToken(): Promise<string> {
  */
 export async function verifyAuthToken(token: string): Promise<boolean> {
   try {
-    const secret = new TextEncoder().encode(JWT_SECRET);
+    const secret = new TextEncoder().encode(getJwtSecret());
     await jwtVerify(token, secret);
     return true;
   } catch {
@@ -45,9 +49,9 @@ export async function verifyAuthToken(token: string): Promise<boolean> {
  */
 export async function getTokenPayload(token: string): Promise<{ authenticated: boolean; iat?: number; exp?: number } | null> {
   try {
-    const secret = new TextEncoder().encode(JWT_SECRET);
+    const secret = new TextEncoder().encode(getJwtSecret());
     const { payload } = await jwtVerify(token, secret);
-    
+
     return {
       authenticated: payload.authenticated === true,
       iat: payload.iat ? Number(payload.iat) : undefined,
