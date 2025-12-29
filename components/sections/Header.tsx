@@ -139,9 +139,10 @@ export default function Header() {
               <Image
                 src="/images/ikuei-ekiden-.png"
                 alt="仙台育英 駅伝"
-                width={200}
-                height={60}
-                className="h-14 w-auto"
+                width={120}
+                height={36}
+                className="h-8 w-auto object-contain"
+                style={{ maxHeight: '80px' }}
               />
             </Link>
 
